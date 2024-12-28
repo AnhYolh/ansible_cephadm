@@ -1,0 +1,8 @@
+ceph_dashboard_user: admin
+ceph_dashboard_password: PassWord@!123
+data_count: 5
+rgw_count: 2
+service_id: rgw-8080
+osd_disks:
+  - /dev/vdb
+  - /dev/vdc
