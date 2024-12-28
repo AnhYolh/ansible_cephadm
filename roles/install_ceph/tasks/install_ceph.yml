@@ -1,0 +1,33 @@
+---
+- name: Create /etc/ceph directory
+  file:
+    path: /etc/ceph
+    state: directory
+
+- name: Download cephadm script
+  get_url:
+    url: "https://download.ceph.com/rpm-{{ ceph_release }}/el9/noarch/cephadm"
+    dest: /etc/ceph/cephadm
+    mode: '0755'
+
+- name: Move cephadm to /usr/local/bin
+  command:
+    cmd: mv /etc/ceph/cephadm /usr/local/bin/
+  args:
+    creates: /usr/local/bin/cephadm
+
+- name: Add Ceph repository
+  command:
+    cmd: /usr/local/bin/cephadm add-repo --version {{ ceph_release }}
+  args:
+    creates: /etc/yum.repos.d/ceph.repo
+
+- name: Install ceph-common package
+  command:
+    cmd: /usr/local/bin/cephadm install ceph-common
+  args:
+    creates: /usr/bin/ceph
+
+- name: Print success message
+  debug:
+    msg: "Install ceph-common successfully"

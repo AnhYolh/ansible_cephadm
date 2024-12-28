@@ -1,0 +1,3 @@
+---
+- name: Install ceph-common
+  include_tasks: install_ceph.yml

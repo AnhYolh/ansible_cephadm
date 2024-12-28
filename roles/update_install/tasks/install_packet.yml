@@ -1,0 +1,20 @@
+- name: Update all packages to the latest version
+  ansible.builtin.yum:
+        name: "*"
+        state: latest
+- name: Ensure all required packages are installed
+  ansible.builtin.yum:
+        name:
+          - podman
+          - tree
+          - screen
+          - net-tools
+          - git
+          - wget
+          - fio
+          - byobu
+        state: present
+        
+- name: Print success message
+  debug:
+      msg: "Add Packet completed successfully"

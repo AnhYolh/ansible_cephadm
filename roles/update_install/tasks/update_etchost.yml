@@ -1,0 +1,11 @@
+- name: configure /etc/hosts
+  template:
+      src: etc-hosts.j2
+      dest: /etc/hosts
+      owner: root
+      group: root
+      mode: '0644'
+      
+- name: Print completion message
+  debug:
+      msg: "The /etc/hosts file has been successfully updated on all nodes!"

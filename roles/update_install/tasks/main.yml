@@ -1,0 +1,6 @@
+---
+- name: Update /etc/host
+  include_tasks: update_etchost.yml
+
+- name: Install Packet All NODE
+  include_tasks: install_packet.yml

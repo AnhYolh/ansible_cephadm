@@ -1,0 +1,24 @@
+---
+- name: Copy ceph.pub to cephadm
+  ansible.builtin.shell:
+    cmd: "ssh-copy-id -f -i /etc/ceph/ceph.pub root@{{ hostvars[item].ansible_host }}"
+  loop: "{{ groups['ceph_data'][1:] | unique }}"
+  become: true
+
+- name: Copy ceph.pub to RGW
+  ansible.builtin.shell:
+    cmd: "ssh-copy-id -f -i /etc/ceph/ceph.pub root@{{ hostvars[item].ansible_host }}"
+  loop: "{{ groups['ceph_RGW'] | unique }}"
+  become: true
+
+- name: Disable auto deploy mon
+  ansible.builtin.command:
+    cmd: ceph orch apply mon --unmanaged
+
+- name: Disable auto deploy mon
+  ansible.builtin.command:
+    cmd: ceph orch apply mgr --unmanaged
+
+- name: Print success message
+  debug:
+    msg: "Copy public key ceph & disable auto deploy service successfully"

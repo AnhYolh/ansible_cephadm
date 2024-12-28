@@ -1,0 +1,43 @@
+---
+- name: Add Host ceph_data 
+  ansible.builtin.shell:
+    cmd: ceph orch host add {{ item }}
+  loop: "{{ groups['ceph_data'][1:] }}"
+
+- name: Add Host RGW
+  ansible.builtin.shell:
+    cmd: ceph orch host add {{ item }}
+  loop: "{{ groups['ceph_RGW'] }}"
+
+- name: Pause for 1 minutes with a message
+  ansible.builtin.pause:
+    seconds: 60
+    prompt: "Waiting for 1 minutes before deploying."
+
+- name: Add Label Data
+  ansible.builtin.shell: |
+    ceph orch host label add {{ item }} _admin
+    ceph orch host label add {{ item }} mon
+    ceph orch host label add {{ item }} mgr
+    ceph orch host label add {{ item }} osd
+  loop: "{{ groups['ceph_data'] | unique }}"
+
+- name: Add Label rgw
+  ansible.builtin.shell:
+    cmd: ceph orch host label add {{ item }} rgw
+  loop: "{{ groups['ceph_RGW'] | unique }}"
+
+- name: Sync config to ceph_data
+  ansible.builtin.shell:
+    cmd: rsync -av /etc/ceph/ceph* root@{{ hostvars[item].ansible_host }}:/etc/ceph/
+  loop: "{{ groups['ceph_data'][1:] | unique }}"
+
+- name: Sync config to ceph_RGW
+  ansible.builtin.shell:
+    cmd: rsync -av /etc/ceph/ceph* root@{{ hostvars[item].ansible_host }}:/etc/ceph/
+  loop: "{{ groups['ceph_RGW'] | unique }}"
+
+- name: Print success message
+  debug:
+    msg: "Sync config completed successfully"
+

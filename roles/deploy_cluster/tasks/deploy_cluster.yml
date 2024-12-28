@@ -1,0 +1,20 @@
+---
+- name: Set admin IP for Ceph
+  ansible.builtin.set_fact:
+    ipadmin: "{{ hostvars[groups['ceph_data'][0]].ansible_host }}"
+
+- name: Run cephadm bootstrap command
+  ansible.builtin.shell:
+    cmd: |
+      /usr/local/bin/cephadm bootstrap \
+        --allow-fqdn-hostname \
+        --mon-ip "{{ ipadmin }}" \
+        --dashboard-password-noupdate \
+        --initial-dashboard-user "{{ ceph_dashboard_user }}" \
+        --initial-dashboard-password "{{ ceph_dashboard_password }}"
+  register: deploy_cluster_result
+  changed_when: "'Cluster was successfully bootstrapped' in deploy_cluster_result.stdout"
+
+- name: Print success message
+  debug:
+    msg: "Deploy Cluster successfully"

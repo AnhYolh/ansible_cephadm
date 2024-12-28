@@ -1,0 +1,30 @@
+---
+- name: Deploy OSDs with nested loop
+  ansible.builtin.shell:
+      cmd: ceph orch daemon add osd {{ item.0 }}:{{ item.1 }}
+  with_nested:
+    - "{{ groups['ceph_data'] }}"
+    - "{{ osd_disks }}"
+
+- name: Aplly configure mon
+  ansible.builtin.shell:
+    cmd: ceph orch apply mon --placement="count:{{ data_count }} {{ groups['ceph_data'] | unique| join(" ") }}"
+  become: true
+
+- name: Aplly configure mgr
+  ansible.builtin.shell:
+    cmd: ceph orch apply mgr --placement="count:{{ data_count }} {{ groups['ceph_data'] | unique| join(" ") }}"
+  become: true
+
+- name: Aplly configure rgw
+  ansible.builtin.shell:
+    cmd: ceph orch apply rgw {{ service_id }} --placement="count:{{ rgw_count }} {{ groups['ceph_RGW'] | unique| join(" ") }}"
+  become: true
+
+- name: Print success message
+  debug:
+    msg: "Apply configs osd, mon, mgr, rgw completed successfully"
+
+- name: Print success message
+  debug:
+        msg: "Deploy completed successfully"

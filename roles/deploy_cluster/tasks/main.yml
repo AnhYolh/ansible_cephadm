@@ -1,0 +1,12 @@
+---
+- name: Deploy ceph Cluster
+  include_tasks: deploy_cluster.yml
+
+- name: Copy ceph public key to all node
+  include_tasks: copy_disable.yml
+
+- name: Add host, Label
+  include_tasks: add_host_label.yml
+
+- name: Deploy service osd, mon, mgr, rgw
+  include_tasks: deploy_service.yml
